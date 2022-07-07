@@ -2,6 +2,7 @@
 import React, { useState, useRef } from "react";
 
 import "../css/Table.css";
+import Row from "../components/Row";
 import {
   Button,
   Grid,
@@ -11,9 +12,10 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
-import { Container, Row, Col, Card } from "react-bootstrap";
+//import { Container, Row, Col, Card } from "react-bootstrap";
 //import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.css";
+import { useEffect } from "react";
 
 function Table() {
   const Item = styled(Paper)(({ theme }) => ({
@@ -25,10 +27,10 @@ function Table() {
   }));
 
   const [buttonText, setButtonText] = useState("Done");
-  var array = [""];
+  var array = [0];
   const [disable, setDisable] = useState(false);
-  const [courses, setCourses] = useState(array);
-  const [rows, setRows] = useState(1);
+  const [courses, setCourses] = useState([1]);
+  const [rows, setRows] = useState([1]);
   const [id, setId] = useState(1);
 
   function disableButtons() {
@@ -43,21 +45,28 @@ function Table() {
     setAlignment(newAlignment);
   };
   const decrease = (action) => {
-    setCourses([...courses.slice(1)]);
+    if (courses.length > 1) {
+      setCourses([...courses.slice(1)]);
+    } else {
+      console.log("Nothing to delete");
+    }
     console.log(courses);
+    console.log(courses.length);
 
     /* 
     setCourses(courses);
  */
   };
   const increase = (action) => {
-    if (courses.length <= 7) {
-      setCourses((courses) => [...courses,courses.length]);
-      setId(id+1);
-      console.log(courses);
+    if (courses.length + 1 <= 6) {
+      setCourses((courses) => [...courses, courses.length]);
+      setId(id);
     } else {
       console.log("NO MORE");
     }
+
+    console.log("rows: " + rows);
+    console.log(courses.length);
   };
 
   return (
@@ -67,27 +76,36 @@ function Table() {
       <Button onClick={increase}>+</Button>
       <br />
       <br />
-      <ToggleButtonGroup
-        color="primary"
-        value={alignment}
-        exclusive
-        onChange={handleChange}
-      >
-        
-        {courses.map((name,id) => {
-          
+
+        {rows.map((name, id) => {
           return (
-            <ToggleButton value={rows + "" + id}>
-              <TextField
-                disabled={disable}
-                id="filled-basic"
-                label={"Course "+id}
-                variant="filled"
-              />{" "}
-            </ToggleButton>
+            <div>
+              <Row />
+              <ToggleButtonGroup
+                color="primary"
+                value={alignment}
+                exclusive
+                onChange={handleChange}
+              >
+              {courses.map((name, id) => {
+                return (
+                  <div>
+                    <ToggleButton value={courses + "" + id}>
+                      <TextField
+                        disabled={disable}
+                        id="filled-basic"
+                        label={"Course " + (id + 1)}
+                        variant="filled"
+                      />{" "}
+                    </ToggleButton>
+                  </div>
+                );
+              })}
+              </ToggleButtonGroup>
+              
+            </div>
           );
         })}
-      </ToggleButtonGroup>
       <br />
       {/*       <TextField
         inputRef={valueRef}
@@ -98,7 +116,7 @@ function Table() {
 
       <Button onClick={disableButtons}>{buttonText}</Button>
       <br />
-      <Button onClick={() => setRows(rows+1)}>ADD SEMESTER</Button>
+      <Button onClick={() => setRows([1,1])}>ADD SEMESTER</Button>
     </div>
   );
 }
